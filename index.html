@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<title>Matek kvíz</title>
+<style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50vh;
+    }
+    .card {
+      background: white;
+      padding: 30px;
+      width: 500px;
+      border-radius: 20px;
+      text-align: center;
+    }
+    #question {
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+    #kod {
+        font-size: 10px;
+        text-align: right;
+        position:relative;   /* rögzítés */
+        bottom: 0;        /* a lap aljához */
+        left: 0;          /* bal oldalhoz igazítás */
+        width: 100%;      /* teljes szélesség */
+    }
+    #counter {
+        font-size: 10px;
+        font-size: 18px;
+        margin: 5px;
+        padding: 5px ;
+        text-align: center;
+        position:fixed;   /* rögzítés */
+        bottom: 0;        /* a lap aljához */
+        left: 0;          /* bal oldalhoz igazítás */
+        width: 100%;      /* teljes szélesség */
+        background-color: rgb(153, 155, 155);
+    }
+  </style>
+<style>
+
+button { padding: 10px 20px; font-size: 1em; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="card"><h1>Matek kérdések</h1>
+    <div id="question">Kattints a gombra a kezdéshez!</div>
+    <button id="nextBtn">Következő kérdés</button>
+    <div id="kod"></div>
+    <div id="counter">A kérdés száma: 0</div>
+</div>
+
+
+<script>
+// Kérdések tömbje
+const questions = [
+// Hatványok
+    '5.1.1.* Az <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup><mi>a</mi><mi>n</mi></msup></math> kifejezésben nevezd meg a hatvány alapját és kitevőjét.<br> <br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup><mi>2</mi><mi>4</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.1.2.* A hatványozás alaptulajdonságai:<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>a</mi><mi>1</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>1</mi><mi>n</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>a</mi><mi>0</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>0</mi><mi>n</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mi>0</mi><mi>0</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.1.3.* Határozd meg <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup><mi>2</mi><mi>2026</mi></msup></math> utolsó számjegyét!',
+    '5.1.4.* Jelentsd ki az azonos alapú hatványok szorzásának szabályát!<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow><msup><mi>a</mi><mi>n</mi></msup><mo stretchy="false">⋅</mo><msup><mi>a</mi><mi>m</mi></msup></mrow><mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.1.5.* Jelentsd ki az azonos alapú hatványok osztásának szabályát!<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow><msup><mi>a</mi><mi>n</mi></msup><mo stretchy="false">:</mo><msup><mi>a</mi><mi>m</mi></msup></mrow><mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.1.6.* Jelentsd ki a szorzat hatványára vonatkozó szabályt!<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><msup><mrow><mo fence="true" form="prefix" stretchy="false">(</mo><mrow><mrow><mi>a</mi><mo stretchy="false">⋅</mo><mi>b</mi></mrow></mrow><mo fence="true" form="postfix" stretchy="false">)</mo></mrow><mi>n</mi></msup><mo stretchy="false">=</mo><mi>?</mi></math>',     '',
+    '5.1.7.* Jelentsd ki a hatvány hatványára vonatkozó szabályt!<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <msup>   <mrow>    <mo fence="true" form="prefix" stretchy="false">(</mo>    <mrow>     <msup>      <mi>a</mi>      <mi>n</mi>     </msup>    </mrow>    <mo fence="true" form="postfix" stretchy="false">)</mo>   </mrow>   <mi>m</mi>  </msup>  <mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.1.8.* Milyen számokat nevezünk négyzetszámoknak?<br><br> Milyen számjegyekben végződhetnek a négyzetszámok?',
+    '5.1.9.* Két azonos alapú hatvány közül melyik nagyobb?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <msup>   <mn>3</mn>   <mn>75</mn>  </msup></math> és <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>3</mn>   <mn>49</mn>  </msup></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>9</mn>   <mn>25</mn>  </msup></math> és <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>3</mn>   <mn>57</mn>  </msup></math>',
+    '5.1.10.* Két azonos kitevőjű hatvány közül melyik nagyobb?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <msup>   <mn>7</mn>   <mn>38</mn>  </msup></math> és <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>9</mn>   <mn>38</mn>  </msup></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>3</mn>   <mn>36</mn>  </msup></math> és <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"><msup>   <mn>29</mn>   <mn>12</mn>  </msup></math>',
+// Hatványok vége
+//Halmazok
+    '5.2.1.* Mit értünk egy halmaz kardinálisa (számossága) alatt? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mi mathvariant="italic">card</mi>   <mrow>    <mi mathvariant="normal">∅</mi>    <mo stretchy="false">=</mo>    <mi>?</mi>   </mrow>  </mrow></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mi mathvariant="italic">card</mi>   <mrow>    <mi mathvariant="normal">ℕ</mi>    <mo stretchy="false">=</mo>    <mi>?</mi>   </mrow>  </mrow></math>',
+    '5.2.2.* Mit értünk egy halmaz részhalmaza alatt? <br><br>Minden nem üres halmaznak legalább hány részhalmaza van, és melyek ezek?',
+    '5.2.3.* Mikoz nevezünk két halmazt egyenlőnek?',
+    '5.2.4.* Mit értünk két halmaz egyesítése <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mi>(A</mi>   <mo stretchy="false">∪</mo>   <mi>B)</mi>  </mrow> </math> alatt?<br> <br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mi>{2; 4; 5}</mi>   <mo stretchy="false">∪</mo>   <mi>{3; 5}</mi>  </mrow> <mo stretchy="false">=</mo><mi>?</mi></math>',
+    '5.2.5.* Mit értünk két halmaz metszete <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <mrow>   <mo fence="true" form="prefix" stretchy="false">(</mo>   <mrow>    <mrow>     <mi>A</mi>     <mo stretchy="false">∩</mo>     <mi>B</mi>    </mrow>   </mrow>   <mo fence="true" form="postfix" stretchy="false">)</mo>  </mrow> </math> alatt? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mo fence="true" form="prefix" stretchy="false"></mo>   <mrow>    <mrow>     <mi>{3; 4; 7}</mi>     <mo stretchy="false">∩</mo>     <mi>{1; 4; 5}</mi>    </mrow>   </mrow>   <mo fence="true" form="postfix" stretchy="false"></mo>  </mrow><mo stretchy="false">=</mo><mi>?</mi> </math>',
+    '5.2.6.* Mit értünk diszjunkt halmazok alatt?',
+    '5.2.7.* Mit értünk két halmaz különbsége <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline"> <semantics>  <mrow>   <mo fence="true" form="prefix" stretchy="false">(</mo>   <mrow>    <mrow>     <mi>A</mi>     <mo stretchy="false">∖</mo>     <mi>B</mi>    </mrow>   </mrow>   <mo fence="true" form="postfix" stretchy="false">)</mo>  </mrow>  <annotation encoding="StarMath 5.0">( A setminus B ) </annotation> </semantics></math> alatt?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <mrow>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>3</mn>       <mi>;</mi>       <mn>5</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>    <mo stretchy="false">∖</mo>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>2</mn>       <mi>;</mi>       <mn>3</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">lbrace 1;3; 5 rbrace  setminus lbrace 1;2;3rbrace=?  </annotation> </semantics></math>',
+    '5.2.8.* Mit értünk két halmaz Descartes-féle szorzata alatt?',
+    '5.2.9.* Állapítsd meg az alábbi kijelentések logikai értékét!<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mrow>    <mn>5</mn>    <mo stretchy="false">∈</mo>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>5</mn>       <mi>;</mi>       <mn>6</mn>       <mi>;</mi>       <mn>9</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>   </mrow></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>    <mn>4</mn>    <mo stretchy="false">∉</mo>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>5</mn>       <mi>;</mi>       <mn>6</mn>       <mi>;</mi>       <mn>9</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>   </mrow>   </math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><mrow>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>6</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>    <mo stretchy="false">⊂</mo>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>5</mn>       <mi>;</mi>       <mn>6</mn>       <mi>;</mi>       <mn>9</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>   </mrow></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>5</mn>       <mi>;</mi>       <mn>9</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>    <mo stretchy="false">⊄</mo>    <mrow>     <mo fence="true" form="prefix" stretchy="false">{</mo>     <mrow>      <mrow>       <mn>1</mn>       <mi>;</mi>       <mn>5</mn>       <mi>;</mi>       <mn>6</mn>       <mi>;</mi>       <mn>9</mn>      </mrow>     </mrow>     <mo fence="true" form="postfix" stretchy="false">}</mo>    </mrow>   </mrow>  </mrow> </math>',
+    '5.2.10.* Milyen számhalmazt jelöl az <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <mi mathvariant="normal">ℕ</mi>  </math>?<br><br> Adj példát olyan számokra, amelyek nincsenek az <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <mi mathvariant="normal">ℕ</mi>  </math> halmazban!',
+// Halmazok vége
+// Oszthatóság
+    '5.3.1.* Milyen számokat nevezünk prímszámnak?',
+    '5.3.* Milyen számokat nevezünk összetett számnak?',
+    '5.3.3.* Melyek egy szám valódi osztói?',
+    '5.3.4.* Melyek egy szám triviális (nem valódi) osztói?',
+    '5.3.5.* Sorold fel 3, 4, 5 és 9-cel való oszthatósági szabályokat!',
+    '5.3.6.* Mikor nevezek két számot relatív prímnek?',
+    '5.3.7.* Hogy határozd meg két szám ln.k.o.-ját? <br><br>Pl. 60 és 45',
+    '5.3.8.* Hogy határozd meg két szám lk.k.t.-ét? <br><br> Pl. 45 és 30',
+    '5.3.9.* Mikor osztható egy szám 6-tal?',
+    '5.3.10.* Mikor osztható egy szám 45-tel?',
+    '5.3.11.* Jelentsd ki a maradékos osztás tételét',
+    '5.3.12.* Mi a páros számok általános alakja? Hát a páratlanoké?',
+    '5.3.13.* Hány páros prímszám létezik? Sorold fel!',
+// Oszthatóság vége
+// Törtek
+    '5.4.1.* Milyen törteket nevezünk valódi törteknek?<br><br> Adj példát!',
+    '5.4.2.* Milyen törteket nevezünk egységnyi törteknek?<br><br> Adj példát!',
+    '5.4.3.* Milyen törteket nevezünk áltörteknek?<br><br> Adj példát!',
+    '5.4.5.* Milyen törteket nevezünk egyenértékű törteknek?<br><br> Hogy ellenőrízzük, hogy két tört egyenértékű vagy sem?',
+    '5.4.6.* Mit értünk törtek egyszerűsítése alatt? <br><br>Mennyivel egyszerűsíthetjük a <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mfrac>   <mn>24</mn>   <mn>27</mn>  </mfrac> </math> törtet?',
+    '5.4.7.* Mit értünk törtek bővítése alatt?<br><br> Mennyit kapunk eredményül, ha a <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mfrac>   <mn>4</mn>   <mn>7</mn>  </mfrac> </math> törtet 6-tal bővítjük?',
+    '5.4.8.* Milyen törteket nevezünk irreducibilis törteknek?<br><br> Adj példát!',
+    '5.4.9.* Hogy adunk össze közös nevezőjű törteket?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mrow>    <mfrac>     <mn>5</mn>     <mn>3</mn>    </mfrac>    <mo stretchy="false">+</mo>    <mfrac>     <mn>1</mn>     <mn>3</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math><br>Mi az eljárás különböző nevezőjű törtek esetén?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mrow>    <mfrac>     <mn>1</mn>     <mn>6</mn>    </mfrac>    <mo stretchy="false">+</mo>    <mfrac>     <mn>7</mn>     <mn>4</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math>',
+    '5.4.9.* Hogy vonunk ki közös nevezőjű törteket?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mrow>    <mfrac>     <mn>7</mn>     <mn>5</mn>    </mfrac>    <mo stretchy="false">-</mo>    <mfrac>     <mn>3</mn>     <mn>5</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math><br>Mi az eljárás különböző nevezőjű törtek esetén?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mrow>    <mfrac>     <mn>7</mn>     <mn>6</mn>    </mfrac>    <mo stretchy="false">-</mo>    <mfrac>     <mn>7</mn>     <mn>9</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math>',
+    '5.4.10.* Hogyan emelünk ki egészet törtből?<br><br>Emeld ki az egészet az alábbi törtből:<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mfrac>    <mn>19</mn>    <mn>5</mn>   </mfrac>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math>',
+    '5.4.11.* Hogyan vezetünk be egészet törtbe?<br><br>Vezesd be az egészet az alábbi törtbe:<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow><mn>2</mn>   <mfrac>    <mn>3</mn>    <mn>4</mn>   </mfrac>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math>',
+    '5.4.12.* Hogyan hasonlítunk össze két közös nevezőjű törtet?<br><br>Melyik nagyobb az alábbi törtek közül?<br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>3</mn>    <mn>4</mn>   </mfrac>   </mrow> </math> vagy <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>7</mn>    <mn>4</mn>   </mfrac>   </mrow> </math> <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>5</mn>    <mn>4</mn>   </mfrac>   </mrow></math> vagy<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>7</mn>    <mn>6</mn>   </mfrac>   </mrow> </math> ',
+    '5.4.13.* Hogyan hasonlítunk össze két azonos számlálójú törtet?<br><br>Melyik nagyobb az alábbi törtek közül?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>5</mn>    <mn>2</mn>   </mfrac>   </mrow> </math> vagy <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>5</mn>    <mn>7</mn>   </mfrac>   </mrow> </math> <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>2</mn>    <mn>17</mn>   </mfrac>   </mrow></math> vagy<math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <mfrac>    <mn>4</mn>    <mn>35</mn>   </mfrac>   </mrow> </math> ',
+    '5.4.14.*Hogy szorzunk össze két törtet? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mrow>    <mfrac>     <mn>3</mn>     <mn>4</mn>    </mfrac>    <mo stretchy="false">⋅</mo>    <mfrac>     <mn>2</mn>     <mn>5</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math><br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mrow>    <mn>3</mn>    <mo stretchy="false">⋅</mo>    <mfrac>     <mn>2</mn>     <mn>5</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math>',
+    '5.4.15.*Hogy osztunk törtet törtel? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mrow>    <mfrac>     <mn>3</mn>     <mn>4</mn>    </mfrac>    <mo stretchy="false">:</mo>    <mfrac>     <mn>2</mn>     <mn>5</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math><br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mrow>    <mn>3</mn>    <mo stretchy="false">:</mo>    <mfrac>     <mn>2</mn>     <mn>5</mn>    </mfrac>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  </math>',
+    '5.4.16.*Hogy bontunk le egy emeletes törtet? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mfrac>    <mfrac>     <mn>4</mn>     <mn>9</mn>    </mfrac>    <mfrac>     <mn>2</mn>     <mn>3</mn>    </mfrac>   </mfrac>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math><br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <mfrac>         <mn>6</mn>       <mfrac>     <mn>4</mn>     <mn>3</mn>    </mfrac>   </mfrac>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math><br><br>',
+    '5.4.17.*Törtet hogy hatványozunk? <br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">   <mrow>   <msup>    <mrow>     <mo fence="true" form="prefix" stretchy="false">(</mo>     <mrow>      <mfrac>       <mn>a</mn>       <mn>b</mn>      </mfrac>     </mrow>     <mo fence="true" form="postfix" stretchy="false">)</mo>    </mrow>    <mn>n</mn>   </msup>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math><br><br>Számítsátok ki: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>   <msup>    <mrow>     <mo fence="true" form="prefix" stretchy="false">(</mo>     <mrow>      <mfrac>       <mn>3</mn>       <mn>5</mn>      </mfrac>     </mrow>     <mo fence="true" form="postfix" stretchy="false">)</mo>    </mrow>    <mn>2</mn>   </msup>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow> </math>',
+    '5.4.18.* Hogy számítjuk ki egy szám törtrészét? <br><br>Mennyi lesz 24 m szövet <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>        <mrow>      <mfrac>       <mn>5</mn>       <mn>6</mn>      </mfrac>      </mrow> </math>-od része?',
+    '5.4.19.* Mi a százalék? <br><br>Írd át tört formájába: 15%=? <br><br>Írd át százalék formájába: <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">   <mrow>        <mrow>      <mfrac>       <mn>35</mn>       <mn>100</mn>      </mfrac>      </mrow> <mo stretchy="false">=</mo>   <mi>?</mi></math>',
+    '5.4.20.* Hogy alakítunk át közönséges törtet tizedes törtté?',
+    '5.4.21.* Hogy alakítunk át véges tizedes törtet közönséges törtté?<br><br>3,15=?',
+    '5.4.22.* Hogy alakítunk át tiszta szakaszos tizedes törtet közönséges törtté?<br><br>1,(37)=?',
+    '5.4.23.* Hogy alakítunk át vegyes szakaszos tizedes törtet közönséges törtté?<br><br>5,1(72)=?',
+    '5.4.24.* Hogy alakítunk át véges tizedes törtet közönséges törtté?<br><br>3,15=?',
+    '5.4.25.* Hogy alakítunk át tiszta szakaszos tizedes törtet közönséges törtté?<br><br>1,(37)=?',
+    '5.4.26.* Hogy adunk össze tizedes törteket ?<br><br>2,36+14,5=?',
+    '5.4.27.* Hogy vonunk ki tizedes törteket ?<br><br>5,3+1,57=?',
+    '5.4.28.* Hogy szorzunk tizedes törteket ?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <mrow>    <mn>2,5</mn>    <mo stretchy="false">⋅</mo>    <mn>0,4</mn>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">2,5 cdot 0,4=? </annotation> </semantics><br><br></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <mrow>    <mn>7</mn>    <mo stretchy="false">⋅</mo>    <mn>0,4</mn>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">2,5 cdot 0,4=? </annotation> </semantics></math><br><br>Hogy szorzunk tizedes számokat 10 hatványaival?',
+    '5.4.29.* Hogy szorzunk tizedes törteket ?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <mrow>    <mn>2,5</mn>    <mo stretchy="false">⋅</mo>    <mn>0,4</mn>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">2,5 cdot 0,4=? </annotation> </semantics><br><br></math><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <mrow>    <mn>7</mn>    <mo stretchy="false">⋅</mo>    <mn>0,4</mn>   </mrow>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">2,5 cdot 0,4=? </annotation> </semantics></math><br><br>Hogy osztunk tizedes számokat 10 hatványaival?',
+    '5.4.30.* Hogy hatványozunk tizedes számokat?<br><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"> <semantics>  <mrow>   <msup>    <mn>0,7</mn>    <mn>2</mn>   </msup>   <mo stretchy="false">=</mo>   <mi>?</mi>  </mrow>  <annotation encoding="StarMath 5.0">0,7^{2} =?</annotation> </semantics></math>',
+    '5.4.31.* Hogy számítjuk ki két vagy több szám számtani közepét? <br><br>Hogyan jelöljük a számtani közepet?<br><br> Mennyi a 12, 9 és 18 számok számtani közepe?',
+    '5.4.32.* Hogy számítjuk ki két vagy több szám súlyozott számtani közepét? <br><br>Hogyan jelöljük a súlyozott számtani közepet?<br><br> Mennyi a 11 és 8 számok 2 és 3 súlyokkal vett súlyozott számtani közepe?',
+// Törtek vége
+// Mértan alap
+    '5.5.1.* Milyen pontokat nevezünk kollineáris pontoknak?<br><br> Milyen tulajdonsággal rendelkezik egy szakasz felezőpontja?',
+    '5.5.2.* Mi a különbség: <ul><li>szakasz és egyenes</li><li>szakasz és félegyenes</li><li>félegyenes és egyenes</li></ul> között?',
+    '5.5.3.* Sorold fel egy szög alkotóelemeit!<br><br>Osztályozd a szögeket!',
+    '5.5.4.* Hány fofkos a:<ul><li>nullszög </li><li>derékszög </li><li>egyenesszög</li></ul>Milyen értékek között helyezkedik el egy<ul><li>hegyesszög</li><li>tompaszög</li></ul>mértéke?',
+    '5.5.5.* Számítsátok ki:<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mrow>    <msup>     <mn>15</mn>     <mi>°</mi>    </msup>    <mo stretchy="false">=</mo>    <mn>...</mn>   </mrow>    <mi>&apos;</mi>  </mrow></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <mn>1020</mn>   <mrow>    <mi>&apos;</mi>    <mo stretchy="false">=</mo>    <mn>...</mn>   </mrow>   <mi>°</mi>  </mrow></math>',
+    '5.5.6.* Számítsátok ki:<math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <msup>    <mn>24</mn>    <mi>°</mi>   </msup>   <mn>16</mn>   <mrow>    <mrow>     <mi>&apos;</mi>     <mo stretchy="false">⋅</mo>     <mn>4</mn>    </mrow>    <mo stretchy="false">=</mo>    <mn>...</mn>   </mrow>  </mrow></math><br><math xmlns="http://www.w3.org/1998/Math/MathML" display="block">  <mrow>   <msup>    <mn>48</mn>    <mi>°</mi>   </msup>   <mn>15</mn>   <mi>&apos;</mi>   <mi mathvariant="normal">:</mi>   <mrow>    <mn>3</mn>    <mo stretchy="false">=</mo>    <mn>..</mn>   </mrow>   <mi>.</mi>  </mrow></math>',
+    '5.5.7.* Hogy szerkesztjük meg egypont szimmetrikusát adott pontra nézve?<br><br> Hogy szerkesztjük meg egy pont adott egyenes szerinti szimmetrikusát?',
+// Mértan alap vége
+// Szögek
+    '6.1.1.* Milyen szögeket nevezünk kiegészítő szögeknek?<br><br>Számítsd ki egy <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <mrow>   <mn>78</mn>   <mi>°</mi>  </mrow></math>-os szög kiegészítő szögét!',
+    '6.1.2.* Milyen szögeket nevezünk pótszögeknek?<br><br>Számítsd ki egy <math xmlns="http://www.w3.org/1998/Math/MathML" display="inline">  <mrow>   <mn>56</mn>   <mi>°</mi>  </mrow></math>-os szög pótszögét!',
+    '6.1.3.* Milyen szögeket nevezünk csúcsszögeknek?<br><br>Milyen tulajdonsággal rendelkeznek a csúcsszögek? ',
+    '6.1.4.* Milyen szögeket nevezünk pont körüli szögeknek?<br><br>Milyen tulajdonsággal rendelkeznek a pont körüli szögek? ',
+    '6.1.5.* Milyen szögeket nevezünk egymás melletti szögeknek?',
+    '6.1.6.* Milyen tulajdonsággal rendelkezik egy szög szögfelezője?',
+    '6.1.6.* Milyen tulajdonsággal rendelkeznek egy szög szögfelezőjén elhelyezkedő pontok?',
+// Szögek vége 
+// Párhuzamosság
+    '6.2.1.* Értelmezd a párhuzamos és a metsző (összefutó) egyeneseket!',
+    '6.2.2.* Nevezd meg a mellékelt ábrán látható belső váltó szögeket!<br><img src="img/6-2-2.png"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a belső váltó szögek?',
+    '6.2.3.* Nevezd meg a mellékelt ábrán látható belső váltó szögeket!<br><img src="img/6-2-2.png" width="250"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a belső váltó szögek?',
+    '6.2.4.* Nevezd meg a mellékelt ábrán látható külső váltó szögeket!<br><img src="img/6-2-2.png" width="250"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a belsőkülső váltó szögek?',
+    '6.2.5.* Nevezd meg a mellékelt ábrán látható megfelelő szögeket!<br><img src="img/6-2-2.png" width="250"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a megfelelő szögek',
+    '6.2.6.* Nevezd meg a mellékelt ábrán a szelő ugyanazon oldalán fekvő belső szögeket!<br><img src="img/6-2-2.png" width="250"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a szelő ugyanazon oldalán fekvő belső szögek?',
+    '6.2.7.* Nevezd meg a mellékelt ábrán a szelő ugyanazon oldalán fekvő kkülső szögeket!<br><img src="img/6-2-2.png" width="250"><br>Párhuzamos egyenesek esetén milyen tulajdonsággal rendelkeznek a szelő ugyanazon oldalán fekvő külső szögek?',
+// Párhuzamosság vége
+// Merőlegesség
+    '6.3.1.* Mikor nevezünk két egyenest merőlegesnek? Hogyan szerkesztünk két merőleges egyenest?',
+    '6.3.2.* Mit értünk egy pont adott egyenestől mért távolsága alatt?',
+    '6.3.3.* Hány fokos szöget alkotnak a merőleges egyenesek?',
+    '6.3.4.* Hogyan szerkesztjük meg egy szakasz felezőmerőlegesét?',
+    '6.3.5.* Milyen tulajdonsággal rendelkeznek egy szakasz felezőmerőlegesén elhelyezkedő pontok?',
+// Merőlegesség vége
+// Kör
+    '6.4.1.* Nevezd meg a mellékelt ábrán a következő elemeket:<ul><li>rugár</li><li>átmérő</li><li>húr</li><li>körív</li><img src="img/6-4-1.png" width="200"><br>?',
+    '6.4.2.* Milyen összefüggés van egy kör sugara és átmérője között?',
+    '6.4.3.* Egy körben milyen szöget nevezünk középponti szögnek? Mivel egyenlő egy középponti szög mértéke?',
+    '6.4.4.* Milyen köröket nevezünk koncentrikus köröknek?',
+    '6.4.5.* Hány fokos egy kör? Hát egy félkör?',
+    '6.4.6.* Hogy nevezünk két olyan kört amelyeknek csak egy közös pontja van?',
+// Kör vége
+// Háromszögek
+    '6.5.1.* Osztályozd a háromszögeket szögeik szerint!',
+    '6.5.2.* Osztályozd a háromszögeket oldalaik szerint!',
+    '6.5.3.* Mit értünk egy háromszög kerülete alatt?',
+    '6.5.4.* Mit mondhatunk egy háromszög szögeinek összegéről??',
+    '6.5.5.* Mit értünk egy háromszög külső szöge alatt?',
+    '6.5.6.* Jelentsd ki egy háromszög külső szögeire vnatkozó tulajdonságokat! (2 tulajdonság)',
+    '6.5.7.* Hogy szerkesztjük meg egy háromszög szögfelezőit? Általában mivel jelöljük metszéspontjukat?',
+    '6.5.8.* Milyen tulajdonságokkal rendelkezik egy háromszög szögfelezőinek metszéspontja?',
+    '6.5.9.* Hogy szerkesztjük meg egy háromszög oldalfelező merőlegeseit? Általában mivel jelöljük a metszéspontjukat?',
+    '6.5.10.* Milyen tulajdonságokkal rendelkezik egy háromszög oldalfelező merőlegeseinek metszéspontja?',
+    '6.5.11.* Hogy szerkesztjük meg egy háromszög magasságait? Hogy jelöljük a háromszög magasságainak metszéspontját?',
+    '6.5.12.* Mit mondhatunk egy háromszög magasságairól egy tompaszögű háromszög esetében? Hát egy derékszögű háromszög esetében?',
+    '6.5.13.* Hogy szerkesztjük meg egy háromszög oldalfelezőit? Általában mivel jelöljük ez oldalfelezők metszéspontját?',
+    '6.5.14.* Milyen tulajdonsággal rendelkezik az oldalfelezők metszéspontja?',
+    '6.5.15.* Sorold fel a háromszögek kongruencia eseteit!',
+    '6.5.16.* Sorold fel az egyenlő szárú háromszög tulajdonságait!',
+    '6.5.17.* Hogy igazolhatjuk, hogy egy háromszög egyenlő szárú?',
+    '6.5.18.* Sorold fel egy egyenlő oldalú háromszög tulajdonságait!',
+    '6.5.19.* Hogy igazolható, hogy egy háromszög egyenlő oldalú?',
+    '6.5.20.* Sorold fel egy derékszögű háromszög tulajdonságait?',
+    '6.5.21.* Hány fokosak egy derékszögű, egyenlő szárú háromszög hegyesszögei?',
+    '6.5.22.* Milyen ponttal esik egybe egy derékszögű háromszög köré írt kör középpontja?',
+    '6.5.23.* Jelentsd ki a 30&deg;-os szög tételét derékszögű háromszögben!',
+    '6.5.24.* Mivel egyenlő egy derékszögű háromszög esetében a derékszögből húzott oldalfelező hossza?',
+    '6.5.25.* Milyen ponttal esik egybe egy háromszög köré írt kör középpontja?',
+    '6.5.26.* Milyen ponttal esik egybe egy háromszögbe írt kör középpontja?',
+    '6.5.27.* Nevezd meg egy derékszögű háromszög oldalait!',,
+    '6.5.28.* Jelentsd ki a Pitágorász tételét!',
+    '6.5.29.* Hogy igazolhatjuk, hogy egy háromszög derékszögű?',
+    '6.5.30.* Az alábbi ábrán látható derékszögű háromszögben BO = 8 cm oldalfelező. Mekkora a háromszög átfogójának hossza?<br><img src="img/6-5-30.png">',
+    '6.5.31.* Az alábbi ábrán látható derékszögű háromszög BC befogójának hossza 10 cm. Mekkora a háromszög átfogójának hossza?<br><img src="img/6-5-31.png">',
+// Háromszögek vége
+];
+
+// Tömb keverése (Fisher-Yates)
+function shuffle(array) {
+    for (let i=array.length-1; i>0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
+shuffle(questions);
+
+let currentIndex = 0;
+const questionDiv = document.getElementById('question');
+const kodDiv = document.getElementById('kod');
+const nextBtn = document.getElementById('nextBtn');
+const counterDiv = document.getElementById('counter');
+
+function bontCsillagAlapjan(szoveg) {
+  const reszek = szoveg.split("*");
+  return {
+    kod: reszek[0] || "",
+    feladat: reszek[1] || ""
+  };
+}
+counter=1;
+function showNextQuestion() {
+        counterDiv.innerHTML="A kérdés száma: "+counter++;
+        if (currentIndex < questions.length) {
+            const eredmeny = bontCsillagAlapjan( questions[currentIndex++]);
+                if(eredmeny.feladat.length!=0) {
+                        questionDiv.innerHTML =eredmeny.feladat;
+                        kodDiv.innerHTML =eredmeny.kod; 
+                }
+            } 
+            else {
+        questionDiv.innerHTML = "Nincs több kérdés!";
+        nextBtn.disabled = true;
+    }
+}
+
+nextBtn.addEventListener('click', showNextQuestion);
+</script>
+</body>
+</html>
